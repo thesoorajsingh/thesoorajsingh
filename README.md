@@ -4,6 +4,7 @@
 ## I make cool stuff on the internet using a bunch of stuff I've learnt over the years.
 Feel free to contact me on my contact details on the left tab 😎
 
-![Sooraj's GitHub stats](https://github-readme-stats.vercel.app/api?username=thesoorajsingh&hide=stars,prs)
-<br/>
-![Sooraj's Most Used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=thesoorajsingh)
+![Sooraj's GitHub stats](https://github-readme-stats.vercel.app/api?username=thesoorajsingh&hide=stars,prs) | ![Sooraj's Most Used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=thesoorajsingh)
+
+
+![Sooraj's Streaks](https://github-readme-streak-stats.herokuapp.com/?user=thesoorajsingh)

@@ -5,3 +5,5 @@
 Feel free to contact me on my contact details on the left tab 😎
 
 ![Sooraj's GitHub stats](https://github-readme-stats.vercel.app/api?username=thesoorajsingh&hide=stars,prs)
+<br/>
+![Sooraj's Most Used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=thesoorajsingh)

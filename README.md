@@ -2,9 +2,12 @@
 
 # Hey!
 ## I make cool stuff on the internet using a bunch of stuff I've learnt over the years.
-Feel free to contact me on my contact details on the left tab 😎
+Feel free to contact me!
+![Sooraj's Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=thesoorajsingh&theme=vue)
 
-![Sooraj's GitHub stats](https://github-readme-stats.vercel.app/api?username=thesoorajsingh&hide=stars,prs) | ![Sooraj's Most Used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=thesoorajsingh)
+
+![](http://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=thesoorajsingh&theme=github_dark) // ![](http://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=thesoorajsingh&theme=github_dark)
 
 
-![Sooraj's Streaks](https://github-readme-streak-stats.herokuapp.com/?user=thesoorajsingh)
+
+![](http://github-profile-summary-cards.vercel.app/api/cards/stats?username=thesoorajsingh&theme=github_dark) // ![](http://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=thesoorajsingh&theme=github_dark&utcOffset=8)

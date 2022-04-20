@@ -4,4 +4,4 @@
 ## I make cool stuff on the internet using a bunch of stuff I've learnt over the years.
 Feel free to contact me on my contact details on the left tab 😎
 
-[![image]({https://github-readme-stats.vercel.app/api/top-langs/?username={thesoorajsingh}})](https://github.com/anuraghazra/github-readme-stats)
+[![image]({https://github-readme-stats.vercel.app/api/top-langs/?username=thesoorajsingh})](https://github.com/anuraghazra/github-readme-stats)

@@ -1,13 +1,17 @@
-[![made-with-javascript](https://img.shields.io/badge/Made%20with-JavaScript-1f425f.svg)](https://www.javascript.com)
+[![Hashnode](https://img.shields.io/badge/Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white)](https://thesoorajsingh.hashnode.dev)    [![Spotify](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/playlist/7Hlj3qD96PhVHQ68zdX7xp?si=7ee9ba2bc96040c1)
 
-# Hey!
-## I make cool stuff on the internet using a bunch of stuff I've learnt over the years.
-Feel free to contact me!
-![Sooraj's Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=thesoorajsingh&theme=vue)
+# Hey there 👀
 
+<br />
 
-![](http://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=thesoorajsingh&theme=github_dark) // ![](http://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=thesoorajsingh&theme=github_dark)
+![Sooraj's Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=thesoorajsingh&theme=tokyonight)
 
 
+![](http://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=thesoorajsingh&theme=tokyonight)    ![](http://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=thesoorajsingh&theme=tokyonight)
 
-![](http://github-profile-summary-cards.vercel.app/api/cards/stats?username=thesoorajsingh&theme=github_dark) // ![](http://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=thesoorajsingh&theme=github_dark&utcOffset=8)
+
+
+![](http://github-profile-summary-cards.vercel.app/api/cards/stats?username=thesoorajsingh&theme=tokyonight)    ![](http://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=thesoorajsingh&theme=tokyonight&utcOffset=8)
+
+
+![Sooraj's Spotify](https://spotify-recently-played-readme.vercel.app/api?user=iaqsbvb6redjj4ifnm2oddy5m&count=3&width=680)

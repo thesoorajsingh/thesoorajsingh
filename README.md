@@ -14,4 +14,4 @@
 ![](http://github-profile-summary-cards.vercel.app/api/cards/stats?username=thesoorajsingh&theme=tokyonight)    ![](http://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=thesoorajsingh&theme=tokyonight&utcOffset=8)
 
 
-![Sooraj's Spotify](https://spotify-recently-played-readme.vercel.app/api?user=iaqsbvb6redjj4ifnm2oddy5m&count=3&width=680)
+[![Sooraj's Spotify](https://spotify-recently-played-readme.vercel.app/api?user=iaqsbvb6redjj4ifnm2oddy5m&count=3&width=680)](https://open.spotify.com/playlist/7Hlj3qD96PhVHQ68zdX7xp?si=1267942a4ff24797)

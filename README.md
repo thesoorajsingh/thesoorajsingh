@@ -1,7 +1,7 @@
 [![Hashnode](https://img.shields.io/badge/Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white)](https://thesoorajsingh.hashnode.dev)    [![Spotify](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/playlist/7Hlj3qD96PhVHQ68zdX7xp?si=7ee9ba2bc96040c1)
 
 # Hey there 👀
-## I'm Sooraj, a web developer and ~~an aspiring~~ working towards being a full stack dev
+## I'm Sooraj, a Frontend developer and ~~an aspiring~~ working towards being a full stack dev
 
 <br />
 

@@ -8,7 +8,7 @@
 <img src="https://readme-jokes.vercel.app/api?hideBorder&theme=tokyonight" alt="Jokes Card" height="145" />  <img src="https://c.tenor.com/maJMe3IR3ZMAAAAM/see-myself-out.gif" height="150px" width="100px" />
 
 <details>
-<summary style="font-size:2.5rem">Here's what I've been upto!</summary>
+  <summary><span style="font-size:16px"><strong>Here's what I've been upto!</strong><span></summary>
 
 ![Sooraj's Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=thesoorajsingh&theme=tokyonight)
 
@@ -20,5 +20,9 @@
 ![](http://github-profile-summary-cards.vercel.app/api/cards/stats?username=thesoorajsingh&theme=tokyonight)    ![](http://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=thesoorajsingh&theme=tokyonight&utcOffset=8)
 </details>
 
-### Here's all my favourite music:
+<details>
+  <summary><strong>Here's all my favourite music:</strong></summary>
+  
 [![Sooraj's Spotify](https://spotify-recently-played-readme.vercel.app/api?user=iaqsbvb6redjj4ifnm2oddy5m&count=3&width=680)](https://open.spotify.com/playlist/7Hlj3qD96PhVHQ68zdX7xp?si=1267942a4ff24797)
+
+</details>

@@ -5,7 +5,7 @@
 
 ### Here's a Joke:
 
-<img src="https://readme-jokes.vercel.app/api?hideBorder&theme=tokyonight" alt="Jokes Card" height="145" />  <img src="https://c.tenor.com/maJMe3IR3ZMAAAAM/see-myself-out.gif" height="150px" width="100px" />
+<img src="https://readme-jokes.vercel.app/api?hideBorder&theme=tokyonight" alt="Jokes Card" height="145" />  <img src="https://c.tenor.com/maJMe3IR3ZMAAAAM/see-myself-out.gif" height="150px" width="200px" />
 
 <details>
   <summary><span style="font-size:16px"><strong>Here's what I've been upto!</strong><span></summary>

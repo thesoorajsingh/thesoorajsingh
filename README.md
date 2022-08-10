@@ -1,6 +1,6 @@
 [![Hashnode](https://img.shields.io/badge/Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white)](https://thesoorajsingh.hashnode.dev)    [![Spotify](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/playlist/7Hlj3qD96PhVHQ68zdX7xp?si=7ee9ba2bc96040c1)
 
-# Hey there 👀
+# Hey there <img src="https://raw.githubusercontent.com/ABSphreak/ABSphreak/master/gifs/Hi.gif" width="30px"> <img src="https://media.giphy.com/media/SeVBENCbz4YiL6rXj3/giphy.gif" width="30px">
 ## I'm Sooraj ☀️ and I enjoy solving problems!
 
 ### Here's a Joke:

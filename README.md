@@ -9,6 +9,9 @@
 
 <details>
   <summary><span style="font-size:16px"><strong>Here's what I've been upto!</strong><span></summary>
+  <br />
+
+[![An image of @thesoorajsingh's Holopin badges, which is a link to view their full Holopin profile](https://holopin.me/thesoorajsingh)](https://holopin.io/@thesoorajsingh)
 
 ![Sooraj's Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=thesoorajsingh&theme=tokyonight)
 

@@ -6,4 +6,4 @@ i also enjoy going on drives, travelling, playing games and listening to old roc
 
 i'm currently listening to:
 
-[[https://spotify-github-profile.vercel.app/api/view.svg?uid=iaqsbvb6redjj4ifnm2oddy5m&redirect=true][https://spotify-github-profile.vercel.app/api/view.svg?uid=iaqsbvb6redjj4ifnm2oddy5m&cover_image=true&theme=compact&show_offline=false&background_color=121212&interchange=true)]]
+[https://spotify-github-profile.vercel.app/api/view.svg?uid=iaqsbvb6redjj4ifnm2oddy5m&redirect=true](https://spotify-github-profile.vercel.app/api/view.svg?uid=iaqsbvb6redjj4ifnm2oddy5m&cover_image=true&theme=compact&show_offline=false&background_color=121212&interchange=true)

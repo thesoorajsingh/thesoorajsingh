@@ -1,0 +1,910 @@
+<title>Pani Morph Rig</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..500&display=swap">
+
+<style>
+:root{
+  --brand:#1570EF;
+  --brand-soft:#4A93FF;
+  --live:#0FAE9E;
+  --stage-a:#07182E;
+  --stage-b:#12345F;
+  --ground:#E7EDF4;
+  --panel:#FFFFFF;
+  --panel-2:#F1F5FA;
+  --line:#C6D5E5;
+  --line-soft:#DCE5EF;
+  --ink:#0B1A2B;
+  --ink-2:#3B546E;
+  --ink-3:#6A83A0;
+  --warn:#B4541E;
+  --shadow:0 1px 2px rgba(11,26,43,.06), 0 12px 28px -18px rgba(11,26,43,.35);
+
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Newsreader",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --r:10px;
+  --maxw:1140px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --brand:#4A93FF;
+    --brand-soft:#7FB2FF;
+    --live:#2ED3C0;
+    --ground:#050F1D;
+    --panel:#0B1A2C;
+    --panel-2:#102438;
+    --line:#1E3450;
+    --line-soft:#16283E;
+    --ink:#E6EFF9;
+    --ink-2:#A7BDD4;
+    --ink-3:#728BA8;
+    --warn:#E7A06B;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 34px -20px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --brand:#4A93FF;
+  --brand-soft:#7FB2FF;
+  --live:#2ED3C0;
+  --ground:#050F1D;
+  --panel:#0B1A2C;
+  --panel-2:#102438;
+  --line:#1E3450;
+  --line-soft:#16283E;
+  --ink:#E6EFF9;
+  --ink-2:#A7BDD4;
+  --ink-3:#728BA8;
+  --warn:#E7A06B;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 34px -20px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-display);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:48px 24px 96px;display:flex;flex-direction:column;gap:28px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-family:var(--f-mono);font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+}
+h1{
+  font-family:var(--f-display);font-variation-settings:"wdth" 118,"wght" 700;
+  font-size:clamp(34px,5.2vw,54px);line-height:1.02;letter-spacing:-.022em;
+  margin:10px 0 0;text-wrap:balance;
+}
+h1 em{font-family:var(--f-body);font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--brand)}
+.deck{
+  font-family:var(--f-body);font-size:18px;line-height:1.6;color:var(--ink-2);
+  max-width:60ch;margin:14px 0 0;
+}
+h2{
+  font-family:var(--f-display);font-variation-settings:"wdth" 112,"wght" 650;
+  font-size:15px;letter-spacing:-.008em;margin:0;
+}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:14px}
+.panel-head p{margin:0;font-family:var(--f-body);font-size:14.5px;color:var(--ink-3);font-style:italic}
+
+/* ---------- panels ---------- */
+.panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
+}
+.panel .graph{margin:auto 0}
+.grid{display:grid;gap:20px}
+@media (min-width:900px){
+  .grid-stage{grid-template-columns:1fr 268px}
+  .grid-machine{grid-template-columns:1.42fr 1fr}
+}
+
+/* ---------- stage ---------- */
+.stage{
+  position:relative;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(120% 90% at 74% 10%, rgba(21,112,239,.42) 0%, rgba(7,24,46,0) 62%),
+    radial-gradient(90% 80% at 12% 96%, rgba(15,174,158,.24) 0%, rgba(7,24,46,0) 60%),
+    linear-gradient(168deg,var(--stage-b) 0%,var(--stage-a) 68%);
+  min-height:400px;display:grid;place-items:center;
+  cursor:pointer;user-select:none;
+  touch-action:manipulation;
+}
+.stage::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:radial-gradient(70% 65% at 50% 48%,#000 40%,transparent 100%);
+}
+.stage:focus-visible{outline:2px solid var(--live);outline-offset:3px}
+.stage-hint{
+  position:absolute;left:16px;bottom:14px;z-index:2;
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);
+}
+.stage-mode{
+  position:absolute;right:14px;top:14px;z-index:2;display:flex;gap:6px;
+}
+.chip{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.22);
+  color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);
+}
+.chip.on{border-color:var(--live);color:#062A26;background:var(--live);font-weight:600}
+.pani{width:min(52vw,236px);height:auto;display:block;filter:drop-shadow(0 26px 44px rgba(0,0,0,.45))}
+
+/* ---------- telemetry ---------- */
+.rail{display:flex;flex-direction:column;gap:14px}
+.readout{
+  background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:14px;
+}
+.readout .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.state-now{
+  font-family:var(--f-mono);font-size:23px;font-weight:600;letter-spacing:-.02em;
+  color:var(--live);margin-top:4px;display:flex;align-items:center;gap:9px;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);flex:none}
+.state-src{font-family:var(--f-body);font-style:italic;font-size:14px;color:var(--ink-3);margin-top:2px}
+.meters{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.meter .row{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-mono);font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.meter .track{height:4px;border-radius:2px;background:var(--line-soft);margin-top:5px;overflow:hidden}
+.meter .fill{height:100%;background:var(--brand);border-radius:2px;transform-origin:0 50%}
+.meter.t .fill{background:var(--live)}
+
+/* ---------- machine graph ---------- */
+.graph{width:100%;height:auto;display:block}
+.node-label{font-family:var(--f-mono);font-size:13px;font-weight:600;letter-spacing:-.01em;transition:fill .25s}
+.node-box{transition:fill .25s,stroke .25s}
+.edge-label{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase}
+
+/* ---------- console ---------- */
+.events{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;color:inherit}
+.evt{
+  display:flex;flex-direction:column;gap:2px;align-items:flex-start;
+  padding:9px 11px;border-radius:7px;cursor:pointer;text-align:left;
+  border:1px solid var(--line);background:var(--panel-2);
+  transition:border-color .15s,background .15s,transform .12s;
+}
+.evt:hover:not(:disabled){border-color:var(--brand);transform:translateY(-1px)}
+.evt:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.evt .name{font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.04em}
+.evt .to{font-family:var(--f-mono);font-size:10px;color:var(--ink-3);letter-spacing:.02em}
+.evt:disabled{opacity:.4;cursor:not-allowed}
+.evt.armed{border-color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
+
+.ctl-row{display:flex;gap:8px;margin-top:10px}
+.btn{
+  flex:1;padding:9px 12px;border-radius:7px;border:1px solid var(--line);
+  background:transparent;cursor:pointer;font-family:var(--f-mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s;
+}
+.btn:hover{border-color:var(--brand);color:var(--brand)}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.btn.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+.log{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px;flex:1;min-height:120px}
+.log ul{display:flex;flex-direction:column;gap:5px;margin:0;padding:0}
+.log li{
+  list-style:none;font-family:var(--f-mono);font-size:11.5px;color:var(--ink-2);
+  display:flex;gap:7px;align-items:baseline;
+}
+.log .n{color:var(--ink-3);font-variant-numeric:tabular-nums;min-width:22px}
+.log .ev{color:var(--brand);font-weight:600}
+.log .arw{color:var(--ink-3)}
+.log .bad{color:var(--warn)}
+
+/* ---------- scrub ---------- */
+.scrub-frames{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.frame{
+  border:1px solid var(--line-soft);border-radius:8px;background:var(--panel-2);
+  padding:12px;display:flex;gap:12px;align-items:center;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.frame:hover{border-color:var(--brand)}
+.frame:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.frame.cur{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 8%,var(--panel-2))}
+.frame svg{width:44px;height:auto;flex:none;border-radius:8px}
+.frame .meta{display:flex;flex-direction:column;gap:1px;min-width:0}
+.frame .p{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.frame .fn{font-family:var(--f-mono);font-size:11.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:grab;
+}
+input[type=range]:active{cursor:grabbing}
+input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:var(--line)}
+input[type=range]::-moz-range-track{height:3px;border-radius:2px;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--brand);
+  border:3px solid var(--panel);margin-top:-7px;box-shadow:0 0 0 1px var(--brand);
+}
+input[type=range]::-moz-range-thumb{
+  width:11px;height:11px;border-radius:50%;background:var(--brand);
+  border:3px solid var(--panel);box-shadow:0 0 0 1px var(--brand);
+}
+input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:4px;border-radius:4px}
+.ticks{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:-2px}
+
+/* ---------- notes ---------- */
+.notes{display:grid;gap:20px}
+@media (min-width:760px){.notes{grid-template-columns:repeat(3,1fr)}}
+.note h3{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 7px;
+}
+.note p{font-family:var(--f-body);font-size:15.5px;line-height:1.62;color:var(--ink-2);margin:0 0 9px}
+.note p:last-child{margin-bottom:0}
+code{
+  font-family:var(--f-mono);font-size:.86em;background:var(--panel-2);
+  border:1px solid var(--line-soft);border-radius:4px;padding:1px 4px;color:var(--ink);
+}
+.rule{height:1px;background:var(--line);border:0;margin:6px 0}
+footer{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:6px 18px;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">State machine · SVG morph · Framer Motion</div>
+    <h1>Pani, in three states and <em>everything between them</em></h1>
+    <p class="deck">Three Figma exports — <code>default</code>, <code>on&nbsp;Hover</code>, <code>Hover&nbsp;animation</code> — rebuilt as one rig. A single scalar drives every path, bubble and facial feature, so the frames are not cross-faded; they are continuously interpolated. A state machine decides where that scalar is headed.</p>
+  </header>
+
+  <div id="root"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flubber@0.4.2/build/flubber.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { motion, useMotionValue, useSpring, useTransform, useReducedMotion } = Motion;
+const { useState, useRef, useEffect, useCallback, useMemo } = React;
+
+/* ============================================================
+   1. GEOMETRY — lifted verbatim from the three exports
+   ============================================================ */
+
+const BADGE = "M14.9498 0.0282386H14.9568C15.5925 0.0368481 16.1384 0.0442921 16.5075 0.0449901L31.72 0.0447558L48.569 0.0298648C49.6258 0.0287013 50.6883 0.0289362 51.7503 0.0291689H52.1407C53.1488 0.0296343 54.1561 0.0298669 55.158 0.0291689C57.5503 0.0275401 59.2394 0.503852 61.2019 1.88835C65.7121 5.07084 65.6199 9.67994 65.5243 14.4633C65.5104 15.1598 65.4964 15.8599 65.4964 16.5599V31.7512L65.5048 47.02C65.5055 47.6499 65.5145 48.3116 65.5236 48.989V48.9976C65.5518 51.0974 65.582 53.347 65.3784 55.2688C64.9074 59.7136 61.187 63.1388 56.8085 63.7983C55.0335 63.9542 52.3851 63.929 50.0982 63.9072C49.267 63.8993 48.4836 63.8918 47.8071 63.8937L29.9706 63.8941L16.5638 63.9256C15.8827 63.9274 15.1981 63.9451 14.5133 63.9628H14.5122C10.9981 64.0528 7.48333 64.1429 4.47327 62.1248C-0.0832491 59.0696 -0.028568 54.8674 0.0319311 50.2097C0.0398425 49.6038 0.0477517 48.9899 0.0456575 48.3703L0.0226216 35.0174V17.8615C0.023785 17.1672 0.0179701 16.4535 0.0119202 15.7296L0.0116859 15.7036V15.7024C-0.00832538 13.3232 -0.0292677 10.8376 0.193183 8.5849C0.646461 3.99186 4.68291 0.78308 8.98603 0.0852463C10.0271 -0.0383115 12.9362 0.00101403 14.9498 0.0282386Z";
+
+/* white shell — upright (default.svg / on Hover.svg) */
+const SHELL_UP = "M23.789 14.8718H23.7946C24.1651 14.8758 24.519 14.8795 24.8366 14.8792L32.0628 14.8718L38.9664 14.8727L39.1849 14.8732C40.6269 14.8755 41.9509 14.8778 43.3524 15.0184C45.0815 15.1915 46.6426 16.8408 46.4781 18.5674C46.257 20.8868 45.552 23.5776 45.0959 25.8906L41.0148 45.8269C40.9464 46.1754 40.8596 46.6529 40.7644 46.9873C40.6045 47.5639 40.208 48.046 39.6733 48.3143C39.0758 48.6177 35.1389 48.6927 34.2196 48.5533C33.6376 48.4651 32.5065 48.507 31.1944 48.5556H31.1932C28.1466 48.6685 24.1246 48.8174 23.7318 47.4576C22.9707 44.8233 22.4506 41.6531 21.9017 39.0647C20.8918 34.4212 19.9208 29.7692 18.9882 25.1094C18.5829 23.0373 18.124 20.8926 17.8483 18.801C17.5986 16.9076 18.9456 15.5473 20.6433 14.9265C21.5203 14.8476 22.7233 14.8604 23.789 14.8718Z";
+
+/* white shell — tilted, with the spout (Hover animation.svg) */
+const SHELL_TILT = "M46.5957 19.5351L46.5971 19.5405C46.6892 19.8993 46.7772 20.2421 46.8596 20.5489L48.7371 27.5269L50.523 34.1955L50.5791 34.4067C50.95 35.8001 51.2905 37.0796 51.5175 38.4697C51.7978 40.1847 50.6087 42.1195 48.8984 42.4075C46.6008 42.7943 43.8192 42.8097 41.467 42.9678L21.1537 44.1856C20.7993 44.2097 20.3157 44.2495 19.9681 44.2441C19.3697 44.2389 18.8014 43.9807 18.4039 43.5337C17.9561 43.035 16.8648 39.2517 16.7615 38.3276C16.6961 37.7426 16.3628 36.6609 15.9763 35.4061L15.976 35.405C15.0784 32.4914 13.8936 28.6449 15.1055 27.9136C17.453 26.4966 20.3805 25.1738 22.7387 23.9736C26.9626 21.7963 31.2047 19.6544 35.4644 17.5475C37.3609 16.6197 39.3138 15.6214 41.2628 14.8137C43.0271 14.0825 44.6896 15.0315 45.7287 16.5107C46.0319 17.3374 46.3309 18.5027 46.5957 19.5351Z";
+
+const BODY_UP   = "M20 18L44.5 18L39.0563 47.0801L25.7106 47.0801L20 18Z";
+const BODY_TILT = "M42.5938 16.6836L48.9348 40.3488L19.4367 42.6171L15.9825 29.7261L42.5938 16.6836Z";
+
+/* closed, contented eyes — upright frame */
+const EYE_L_UP = "M26.3023 34.1996C26.2961 34.1841 26.2915 34.1678 26.2884 34.1507C26.1056 33.1252 28.0624 32.8632 28.6922 33.0611C29.0146 33.1624 29.3394 33.3393 29.5967 33.5582C29.6968 33.6432 30.3358 34.4429 29.876 34.4534C29.8085 34.4557 29.7457 34.4161 29.6909 34.3777C29.2707 34.0809 29.0472 33.6408 28.5176 33.514C27.9367 33.3754 27.2988 33.5628 26.8937 34.0029C26.7656 34.1426 26.442 34.5372 26.3023 34.1996Z";
+const EYE_R_UP = "M39.2235 34.1996C39.2305 34.1841 39.2355 34.1678 39.2386 34.1507C39.4202 33.1252 37.4634 32.8632 36.8348 33.0611C36.5112 33.1624 36.1876 33.3393 35.9292 33.5582C35.8302 33.6432 35.19 34.4429 35.6509 34.4534C35.7185 34.4557 35.7802 34.4161 35.836 34.3777C36.2563 34.0809 36.4798 33.6408 37.0094 33.514C37.5903 33.3754 38.227 33.5628 38.6333 34.0029C38.7613 34.1426 39.085 34.5372 39.2235 34.1996Z";
+const MOUTH_UP = "M29.0621 37.7776C31.417 38.5878 34.1526 38.5377 36.5017 37.7263C37.3538 37.433 38.1687 37.0197 38.8834 36.468C39.1057 36.2957 39.5143 35.9348 39.7763 36.2712C39.9253 36.4633 39.7995 36.7846 39.6971 36.9685C39.4468 37.4167 39.0056 37.7322 38.6017 38.0313C38.0721 38.4225 37.483 38.7344 36.8754 38.9847C35.8405 39.4108 34.7277 39.6331 33.6137 39.7076C33.193 39.7355 32.7724 39.7433 32.3518 39.7309C32.3402 39.7301 32.3281 39.7297 32.3157 39.7297C31.7166 39.7103 31.1214 39.6486 30.53 39.5446C29.4067 39.3479 28.3113 38.9626 27.3172 38.4015C27.2085 38.3402 27.101 38.2773 26.9947 38.2129C26.6385 37.9952 26.2951 37.7764 26.0902 37.3969C26.0157 37.2584 25.9738 37.0942 26.0181 36.9441C26.0926 36.6892 26.3685 36.5949 26.6083 36.6461C26.9866 36.7276 27.2927 36.9452 27.6233 37.1303C27.9733 37.3259 28.335 37.4978 28.7082 37.646C28.8254 37.6926 28.9434 37.7364 29.0621 37.7776Z";
+
+/* closed eyes + wavy mouth — tilted frame */
+const EYE_L_TILT = "M20.9881 37.0606C21.0114 37.1028 21.0586 37.1391 21.1334 37.1587C21.7532 37.32 22.9739 37.1137 23.0734 36.3311C23.0901 36.2033 23.024 35.8908 22.8394 36.0391C22.6454 36.1953 22.5132 36.4125 22.3127 36.5658C22.1165 36.7162 21.8869 36.799 21.6384 36.7903C21.4771 36.7845 21.3013 36.7489 21.1436 36.7983C21.0012 36.8419 20.9358 36.9669 20.9881 37.0606Z";
+const EYE_R_TILT = "M27.7699 37.0606C27.746 37.1028 27.6987 37.1391 27.6246 37.1587C27.0041 37.32 25.7835 37.1137 25.6839 36.3311C25.668 36.2033 25.7341 35.8908 25.9179 36.0391C26.1119 36.1953 26.2441 36.4125 26.4447 36.5658C26.6408 36.7162 26.8704 36.799 27.1189 36.7903C27.281 36.7845 27.4561 36.7489 27.6137 36.7983C27.7561 36.8419 27.8215 36.9669 27.7699 37.0606Z";
+const MOUTH_TILT = "M26.8515 41.2653C26.6268 41.2648 26.3708 41.1606 26.0835 40.9528C25.8379 40.7748 25.6396 40.7087 25.5524 40.7748C25.5241 40.7959 25.4928 40.8409 25.4601 40.8882C25.4129 40.955 25.3599 41.0313 25.2807 41.0981C24.9886 41.3459 24.5853 41.2783 24.3056 41.1323C24.1981 41.0763 24.1022 41.011 24.0099 40.9477C23.9045 40.8751 23.8057 40.8075 23.704 40.7639C23.4584 40.6607 23.1525 40.7014 22.9425 40.8656C22.914 40.8884 22.8842 40.9138 22.8532 40.9419C22.7645 41.0211 22.6635 41.1105 22.5255 41.1657C22.115 41.3285 21.7706 41.08 21.493 40.8802C21.3383 40.7683 21.1915 40.6622 21.0505 40.6251C20.8391 40.5699 20.5768 40.7138 20.5107 40.9223C20.4671 41.0596 20.3203 41.1359 20.1823 41.0916C20.045 41.048 19.9687 40.9012 20.0123 40.7639C20.1641 40.2873 20.7003 39.9923 21.1835 40.1194C21.4182 40.1812 21.6209 40.3272 21.7989 40.4559C22.0641 40.6469 22.2029 40.7312 22.3322 40.6796C22.3853 40.6586 22.4434 40.607 22.5051 40.5518C22.541 40.5193 22.5795 40.4866 22.6207 40.4537C22.9803 40.1718 23.486 40.1049 23.9067 40.2822C24.0571 40.3461 24.1835 40.4326 24.3056 40.5162C24.3892 40.5736 24.4676 40.6273 24.5475 40.6687C24.6805 40.7378 24.8585 40.7705 24.9428 40.6993C24.9704 40.676 24.9995 40.6339 25.0314 40.5888C25.0808 40.5176 25.1426 40.429 25.2363 40.3578C25.4405 40.203 25.8067 40.1071 26.3901 40.5292C26.643 40.7123 26.8392 40.7814 26.9292 40.7174C26.9561 40.6985 26.9881 40.6586 27.0215 40.6157C27.0457 40.5847 27.0707 40.5544 27.0964 40.5249C27.331 40.2633 27.714 40.1536 28.0969 40.2379C28.479 40.3229 28.7798 40.5845 28.8823 40.9201C28.9244 41.0582 28.8467 41.2042 28.7086 41.2464C28.5699 41.2885 28.4245 41.2108 28.3824 41.0727C28.3257 40.886 28.139 40.7828 27.9835 40.7487C27.828 40.7145 27.6159 40.729 27.4858 40.8744C27.4674 40.8952 27.4495 40.917 27.432 40.9397C27.3819 41.003 27.3194 41.0822 27.23 41.1446C27.1167 41.2251 26.9905 41.2653 26.8515 41.2653Z";
+
+/* pour-only cheek marks */
+const DRIP_A = "M23.0213 38.1165C23.0925 38.1427 23.1608 38.1747 23.2211 38.2197C23.5306 38.4522 23.1942 38.7298 22.9769 38.8663C22.7408 39.0153 22.3586 39.2783 22.0651 39.2216C22.0186 39.2122 21.9706 39.1926 21.9474 39.1519C21.8362 38.9586 22.1457 38.8671 22.2714 38.8133C22.3644 38.7733 22.5468 38.6825 22.5359 38.5568C22.533 38.5198 22.5097 38.4878 22.4836 38.4616C22.2998 38.2822 21.9045 38.3352 21.8318 38.0366C21.8224 37.9959 21.8282 37.9509 21.8558 37.9196C21.882 37.8891 21.9234 37.8768 21.9634 37.8702C22.2089 37.8288 22.4509 37.9131 22.6754 38.0039C22.7851 38.0475 22.9072 38.0751 23.0213 38.1165Z";
+const DRIP_B = "M25.7366 38.1165C25.6654 38.1427 25.5979 38.1747 25.5376 38.2197C25.2273 38.4522 25.5637 38.7298 25.781 38.8663C26.0171 39.0153 26.3993 39.2783 26.6928 39.2216C26.7393 39.2122 26.7873 39.1926 26.8112 39.1519C26.9217 38.9586 26.6122 38.8671 26.4865 38.8133C26.3935 38.7733 26.2111 38.6825 26.222 38.5568C26.2256 38.5198 26.2481 38.4878 26.2743 38.4616C26.4589 38.2822 26.8534 38.3352 26.926 38.0366C26.9355 37.9959 26.9297 37.9509 26.9021 37.9196C26.8759 37.8891 26.8345 37.8768 26.7945 37.8702C26.5489 37.8288 26.3077 37.9131 26.0825 38.0039C25.9728 38.0475 25.8507 38.0751 25.7366 38.1165Z";
+
+/* greeting-only features */
+const EYE_OPEN_L = "M29.7034 29.7207C29.7034 30.8156 29.1769 31.7031 28.5284 31.7031C27.8785 31.7031 27.3521 30.8156 27.3521 29.7207C27.3521 28.6258 27.8785 27.7383 28.5284 27.7383C29.1769 27.7383 29.7034 28.6258 29.7034 29.7207Z";
+const EYE_OPEN_R = "M37.4768 29.7207C37.4768 30.8156 36.9503 31.7031 36.3018 31.7031C35.6519 31.7031 35.1255 30.8156 35.1255 29.7207C35.1255 28.6258 35.6519 27.7383 36.3018 27.7383C36.9503 27.7383 37.4768 28.6258 37.4768 29.7207Z";
+const PUPIL_L = "M29.3919 29.7177C29.3919 30.5211 29.0059 31.1723 28.5294 31.1723C28.0515 31.1723 27.6655 30.5211 27.6655 29.7177C27.6655 28.9129 28.0515 28.2617 28.5294 28.2617C29.0059 28.2617 29.3919 28.9129 29.3919 29.7177Z";
+const PUPIL_R = "M37.1742 29.7177C37.1742 30.5211 36.7869 31.1723 36.3103 31.1723C35.8337 31.1723 35.4478 30.5211 35.4478 29.7177C35.4478 28.9129 35.8337 28.2617 36.3103 28.2617C36.7869 28.2617 37.1742 28.9129 37.1742 29.7177Z";
+
+/* rising fizz, ordered left → right so the stagger reads as a sweep */
+const FIZZ = [
+  { d:"M26.9919 25.4048C26.9919 26.1505 26.6925 26.3619 26.2829 26.3619C25.872 26.3619 25.5044 26.1505 25.5044 25.4048C25.5044 24.6591 25.809 23.1191 26.2199 23.1191C26.6308 23.1191 26.9919 24.6591 26.9919 25.4048Z", o:[26.25,24.74] },
+  { d:"M30.2729 24.343C30.2729 24.8563 30.0681 25.002 29.7858 25.002C29.5035 25.002 29.2515 24.8563 29.2515 24.343C29.2515 23.831 29.4602 22.7715 29.7438 22.7715C30.026 22.7715 30.2729 23.831 30.2729 24.343Z", o:[29.76,23.89] },
+  { d:"M33.9684 23.2922C33.9684 24.0392 33.6691 24.2519 33.2569 24.2519C32.846 24.2519 32.4771 24.0392 32.4771 23.2922C32.4771 22.5452 32.7829 21 33.1952 21C33.6074 21 33.9684 22.5452 33.9684 23.2922Z", o:[33.22,22.63] },
+  { d:"M35.97 25.2779C35.97 25.7899 35.7652 25.9356 35.4816 25.9356C35.1993 25.9356 34.9473 25.7899 34.9473 25.2779C34.9473 24.7645 35.1573 23.7051 35.4396 23.7051C35.7218 23.7051 35.97 24.7645 35.97 25.2779Z", o:[35.46,24.82] },
+  { d:"M40.0369 25.3594C40.0369 26.3191 39.6522 26.5922 39.1231 26.5922C38.5941 26.5922 38.1201 26.3191 38.1201 25.3594C38.1201 24.3984 38.514 22.4121 39.0431 22.4121C39.5721 22.4121 40.0369 24.3984 40.0369 25.3594Z", o:[39.08,24.50] },
+];
+
+const LASHES = [
+  { d:"M23.3198 34.5109C23.2708 34.5109 23.2231 34.4995 23.1767 34.4768C23.0192 34.398 22.9549 34.2063 23.0336 34.0475L23.8857 32.3447C23.9645 32.1872 24.1561 32.1228 24.315 32.2016C24.4725 32.2804 24.5355 32.4721 24.4568 32.6296L23.6047 34.3337C23.5496 34.4453 23.4367 34.5109 23.3198 34.5109Z", o:[23.75,33.43] },
+  { d:"M24.7035 34.5109C24.6554 34.5109 24.6081 34.4995 24.5617 34.4768C24.4029 34.398 24.3399 34.2063 24.4186 34.0475L25.2694 32.3447C25.3481 32.1872 25.5411 32.1228 25.6987 32.2016C25.8562 32.2804 25.9205 32.4721 25.8418 32.6296L24.9897 34.3337C24.9333 34.4453 24.8204 34.5109 24.7035 34.5109Z", o:[25.13,33.43] },
+  { d:"M26.0879 34.5109C26.0389 34.5109 25.9912 34.4995 25.9448 34.4768C25.7873 34.398 25.7229 34.2063 25.8017 34.0475L26.6537 32.3447C26.7325 32.1872 26.9242 32.1228 27.0817 32.2016C27.2406 32.2804 27.3036 32.4721 27.2248 32.6296L26.3728 34.3337C26.3177 34.4453 26.2048 34.5109 26.0879 34.5109Z", o:[26.51,33.43] },
+  { d:"M37.2158 34.5109C37.1668 34.5109 37.1191 34.4995 37.0727 34.4768C36.9152 34.398 36.8509 34.2063 36.9296 34.0475L37.7817 32.3447C37.8605 32.1872 38.0521 32.1228 38.2097 32.2016C38.3685 32.2804 38.4315 32.4721 38.3528 32.6296L37.5007 34.3337C37.4456 34.4453 37.3327 34.5109 37.2158 34.5109Z", o:[37.64,33.43] },
+  { d:"M38.5996 34.5109C38.5506 34.5109 38.5029 34.4995 38.4565 34.4768C38.299 34.398 38.2347 34.2063 38.3134 34.0475L39.1655 32.3447C39.2455 32.1872 39.4372 32.1228 39.5948 32.2016C39.7523 32.2804 39.8166 32.4721 39.7379 32.6296L38.8858 34.3337C38.8294 34.4453 38.7165 34.5109 38.5996 34.5109Z", o:[39.02,33.43] },
+  { d:"M39.9831 34.5109C39.9349 34.5109 39.8877 34.4995 39.8413 34.4768C39.6838 34.398 39.6194 34.2063 39.6982 34.0475L40.5502 32.3447C40.629 32.1872 40.8207 32.1228 40.9782 32.2016C41.1358 32.2804 41.2001 32.4721 41.1213 32.6296L40.2693 34.3337C40.2141 34.4453 40.1012 34.5109 39.9831 34.5109Z", o:[40.41,33.43] },
+];
+
+/* the two little side flourishes that only appear on greeting */
+const FLOURISH_L = "M20.7732 45.9223C20.7155 45.705 20.7498 45.4308 20.8762 45.0996C20.9846 44.8163 20.9971 44.6076 20.9107 44.5405C20.883 44.5186 20.8314 44.5 20.7773 44.4807C20.7005 44.4524 20.6131 44.4209 20.528 44.3617C20.2131 44.1437 20.174 43.7367 20.2427 43.4287C20.2689 43.3103 20.3072 43.2008 20.3444 43.0953C20.3873 42.9747 20.427 42.8618 20.4428 42.7522C20.4789 42.4883 20.3604 42.2034 20.1475 42.0431C20.1181 42.0214 20.0858 41.9992 20.0507 41.9765C19.9512 41.9114 19.8388 41.8369 19.7497 41.7179C19.4862 41.3635 19.6371 40.9665 19.7583 40.6467C19.8263 40.4683 19.8908 40.299 19.8901 40.1533C19.8887 39.9348 19.6819 39.7186 19.4633 39.7088C19.3194 39.7022 19.2077 39.5802 19.2148 39.4354C19.2214 39.2914 19.3434 39.1797 19.4873 39.1863C19.987 39.2096 20.4107 39.6512 20.413 40.1508C20.4141 40.3935 20.3255 40.6271 20.2473 40.8323C20.1314 41.138 20.0859 41.2938 20.1692 41.4054C20.2033 41.4512 20.2681 41.494 20.3375 41.5393C20.3781 41.5656 20.4196 41.5943 20.4621 41.6255C20.8275 41.9 21.0229 42.3711 20.9606 42.8234C20.9377 42.9852 20.887 43.1297 20.8378 43.2692C20.804 43.3648 20.7724 43.4545 20.7531 43.5424C20.7208 43.6887 20.7353 43.8691 20.8259 43.9321C20.8555 43.9528 20.9037 43.9699 20.9555 43.9891C21.0371 44.0184 21.1387 44.0551 21.2317 44.1273C21.4341 44.2844 21.6215 44.6133 21.3647 45.2861C21.2533 45.5777 21.2374 45.7851 21.3225 45.8556C21.3477 45.8766 21.3946 45.8972 21.4446 45.9184C21.4808 45.9337 21.5165 45.95 21.5517 45.9672C21.8651 46.1261 22.0702 46.4676 22.0879 46.8593C22.1047 47.2504 21.9299 47.6087 21.6322 47.7945C21.5097 47.8709 21.3485 47.8337 21.2721 47.7112C21.1955 47.5881 21.233 47.4276 21.3554 47.3512C21.5211 47.2481 21.5724 47.041 21.5652 46.882C21.5579 46.723 21.489 46.5218 21.3149 46.4338C21.2901 46.4214 21.2644 46.4097 21.2379 46.3988C21.1638 46.3667 21.0712 46.3268 20.9877 46.2567C20.8807 46.168 20.8092 46.0565 20.7732 45.9223Z";
+const FLOURISH_R = "M43.6638 44.9223C43.7215 44.705 43.6872 44.4308 43.5608 44.0996C43.4524 43.8163 43.4399 43.6076 43.5263 43.5405C43.554 43.5186 43.6056 43.5 43.6597 43.4807C43.7365 43.4524 43.8239 43.4209 43.909 43.3617C44.2239 43.1437 44.263 42.7367 44.1943 42.4287C44.1681 42.3103 44.1298 42.2008 44.0926 42.0953C44.0497 41.9747 44.01 41.8618 43.9942 41.7522C43.9581 41.4883 44.0766 41.2034 44.2895 41.0431C44.3189 41.0214 44.3512 40.9992 44.3864 40.9765C44.4858 40.9114 44.5983 40.8369 44.6873 40.7179C44.9508 40.3635 44.7999 39.9665 44.6787 39.6467C44.6107 39.4683 44.5462 39.299 44.5469 39.1533C44.5483 38.9348 44.7551 38.7186 44.9737 38.7088C45.1176 38.7022 45.2293 38.5802 45.2222 38.4354C45.2156 38.2914 45.0936 38.1797 44.9497 38.1863C44.45 38.2096 44.0263 38.6512 44.024 39.1508C44.023 39.3935 44.1116 39.6271 44.1897 39.8323C44.3056 40.138 44.3511 40.2938 44.2678 40.4054C44.2338 40.4512 44.1689 40.494 44.0996 40.5393C44.0589 40.5656 44.0174 40.5943 43.9749 40.6255C43.6095 40.9 43.4141 41.3711 43.4764 41.8234C43.4993 41.9852 43.5501 42.1297 43.5992 42.2692C43.633 42.3648 43.6646 42.4545 43.6839 42.5424C43.7162 42.6887 43.7017 42.8691 43.6111 42.9321C43.5815 42.9528 43.5333 42.9699 43.4815 42.9891C43.3999 43.0184 43.2983 43.0551 43.2053 43.1273C43.003 43.2844 42.8155 43.6133 43.0723 44.2861C43.1837 44.5777 43.1996 44.7851 43.1145 44.8556C43.0893 44.8766 43.0424 44.8972 42.9924 44.9184C42.9562 44.9337 42.9205 44.95 42.8853 44.9672C42.5719 45.1261 42.3668 45.4676 42.3491 45.8593C42.3323 46.2504 42.5071 46.6087 42.8049 46.7945C42.9273 46.8709 43.0885 46.8337 43.1649 46.7112C43.2415 46.5881 43.2041 46.4276 43.0816 46.3512C42.9159 46.2481 42.8646 46.041 42.8718 45.882C42.8791 45.723 42.948 45.5218 43.1221 45.4338C43.147 45.4214 43.1726 45.4097 43.1991 45.3988C43.2732 45.3667 43.3659 45.3268 43.4493 45.2567C43.5563 45.168 43.6278 45.0565 43.6638 44.9223Z";
+
+/* foam: upright position → poured position. `out` bubbles leave the bottle. */
+const R = 3.3905, RB = 3.67145, RD = 1.99609;
+const FOAM = [
+  { i:[27.6305,44.6327,R],  p:[20.9000,33.0000,0],   fade:1, lag:.14  },
+  { i:[31.6305,44.6327,R],  p:[20.1547,35.1492,R],   fade:0, lag:.14  },
+  { i:[33.6305,44.6327,R],  p:[20.3959,36.7430,R],   fade:0, lag:.14  },
+  { i:[37.6305,44.6327,R],  p:[21.4316,40.6063,R],   fade:0, lag:.14  },
+  { i:[26.6305,41.6327,R],  p:[55.4485,43.4456,RD],  fade:0, lag:.30, out:1 },
+  { i:[31.6305,41.6327,R],  p:[22.1547,37.1492,R],   fade:0, lag:.14  },
+  { i:[37.9044,40.4472,R],  p:[27.1547,40.1492,R],   fade:0, lag:.14  },
+  { i:[34.9044,39.4472,R],  p:[24.1547,36.1492,R],   fade:0, lag:.14  },
+  { i:[25.6305,36.6327,R],  p:[60.4485,41.4456,RD],  fade:0, lag:.44, out:1 },
+  { i:[38.7343,36.0215,RB], p:[42.5033,38.4985,RB],  fade:0, lag:.14  },
+  { i:[30.6305,36.6327,R],  p:[32.1547,39.1492,R],   fade:0, lag:.14  },
+  { i:[35.9044,34.4472,R],  p:[28.1547,37.1492,R],   fade:0, lag:.14  },
+  { i:[24.6305,31.6327,R],  p:[62.4485,48.4456,RD],  fade:0, lag:.56, out:1 },
+  { i:[29.6305,31.6327,R],  p:[37.1547,39.1492,R],   fade:0, lag:.14  },
+  { i:[34.6305,31.6327,R],  p:[47.1547,39.1492,R],   fade:0, lag:.14  },
+  { i:[39.6305,31.6327,R],  p:[56.1545,36.1487,RD],  fade:0, lag:.22, out:1 },
+];
+
+/* ============================================================
+   2. MATH — the 75° pivot the two frames share
+   ============================================================ */
+
+const PIVOT = [32.1547, 32.0642];
+const TILT = 75;
+
+const clamp01 = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeIO = t => (t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2);
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+function spin(x, y, deg){
+  const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+  const dx = x - PIVOT[0], dy = y - PIVOT[1];
+  return [PIVOT[0] + dx*c - dy*s, PIVOT[1] + dx*s + dy*c];
+}
+/* Rotate an entire path about the pivot. Figma writes absolute M/L/H/V/C/Z;
+   H and V become L, because a rotated horizontal is no longer horizontal. */
+function rotatePath(d, deg){
+  const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+  const f = n => n.toFixed(4).replace(/\.?0+$/, "");
+  const pt = (x, y) => {
+    const dx = x - PIVOT[0], dy = y - PIVOT[1];
+    return f(PIVOT[0] + dx*c - dy*s) + " " + f(PIVOT[1] + dx*s + dy*c);
+  };
+  const tok = d.match(/[MLHVCZ]|-?\d*\.?\d+(?:e[-+]?\d+)?/gi);
+  const out = []; let i = 0, cmd = null, cx = 0, cy = 0;
+  const num = () => parseFloat(tok[i++]);
+  while (i < tok.length){
+    if (/[A-Za-z]/.test(tok[i])){ cmd = tok[i].toUpperCase(); i++; }
+    if (cmd === "Z"){ out.push("Z"); continue; }
+    if (cmd === "M" || cmd === "L"){ cx = num(); cy = num(); out.push(cmd + pt(cx, cy)); }
+    else if (cmd === "H"){ cx = num(); out.push("L" + pt(cx, cy)); }
+    else if (cmd === "V"){ cy = num(); out.push("L" + pt(cx, cy)); }
+    else if (cmd === "C"){
+      const a = num(), b = num(), c2 = num(), d2 = num(), e = num(), g = num();
+      cx = e; cy = g;
+      out.push("C" + pt(a, b) + " " + pt(c2, d2) + " " + pt(e, g));
+    }
+  }
+  return out.join("");
+}
+
+/* Work in the bottle's own frame. Un-rotating the poured silhouette by 75°
+   leaves only the real shape change — the spout — which morphs cleanly.
+   The visible rotation is then an exact transform, not an approximation. */
+const SHELL_TILT_UP = rotatePath(SHELL_TILT, -TILT);
+const BODY_TILT_UP  = rotatePath(BODY_TILT,  -TILT);
+FOAM.forEach(b => { const q = spin(b.p[0], b.p[1], -TILT); b.q = [q[0], q[1], b.p[2]]; });
+
+const mk = (a, b, seg) => flubber.interpolate(a, b, { maxSegmentLength: seg });
+const M = {
+  shell: mk(SHELL_UP, SHELL_TILT_UP, 1.5),
+  body:  mk(BODY_UP,  BODY_TILT_UP,  1.5),
+  eyeL:  mk(EYE_L_UP, EYE_L_TILT, .4),
+  eyeR:  mk(EYE_R_UP, EYE_R_TILT, .4),
+  mouth: mk(MOUTH_UP, MOUTH_TILT, .4),
+};
+
+/* posture p ∈ [0,2]:  0 resting · 1 greeting · 2 pouring */
+const greetAt = p => 1 - Math.min(1, Math.abs(p - 1));  // peaks at 1
+const pourAt  = p => clamp01(p - 1);
+const faceAt  = p => p / 2;
+
+/* ============================================================
+   3. THE RIG
+   ============================================================ */
+
+function Foam({ posture, b }){
+  const t = useTransform(posture, v => {
+    const raw = pourAt(v);
+    return easeIO(b.lag ? clamp01((raw - b.lag) / (1 - b.lag)) : raw);
+  });
+  const cx = useTransform(t, v => lerp(b.i[0], b.q[0], v));
+  const cy = useTransform(t, v => lerp(b.i[1], b.q[1], v));
+  const r  = useTransform(t, v => lerp(b.i[2], b.q[2], v));
+  const op = useTransform(t, v => (b.fade ? 1 - v : 1));
+  return <motion.circle cx={cx} cy={cy} r={r} opacity={op} fill="white" />;
+}
+
+/* framer-motion reserves `transform` for its own style pipeline, so SVG
+   transform attributes are bound straight to the element instead. */
+function useAttr(mv, name){
+  const ref = useRef(null);
+  useEffect(() => {
+    const set = v => { if (ref.current) ref.current.setAttribute(name, v); };
+    set(mv.get());
+    return mv.on("change", set);
+  }, [mv, name]);
+  return ref;
+}
+
+function Flourish({ posture, d, ox, oy, dir }){
+  const op = useTransform(posture, greetAt);
+  const tr = useTransform(posture, v => {
+    const g = easeOut(greetAt(v));
+    return `translate(${ox} ${oy}) scale(${(0.4 + 0.6*g).toFixed(3)}) rotate(${((1-g) * dir * 14).toFixed(2)}) translate(${-ox} ${-oy})`;
+  });
+  return <motion.path ref={useAttr(tr, "transform")} d={d} fill="white" opacity={op} />;
+}
+
+function Fizz({ posture, f, k }){
+  const op = useTransform(posture, v => clamp01(greetAt(v) * 1.9 - k * 0.14));
+  const tr = useTransform(posture, v => {
+    const g = clamp01(easeOut(greetAt(v)) * 1.6 - k * 0.12);
+    return `translate(0 ${((1 - g) * 3.4).toFixed(3)}) translate(${f.o[0]} ${f.o[1]}) scale(${(0.25 + 0.75*g).toFixed(3)}) translate(${-f.o[0]} ${-f.o[1]})`;
+  });
+  return <motion.path ref={useAttr(tr, "transform")} d={f.d} fill="white" opacity={op} />;
+}
+
+function Lash({ posture, d, k }){
+  const op = useTransform(posture, v => clamp01(greetAt(v) * 1.8 - (k % 3) * 0.16));
+  const tr = useTransform(posture, v => {
+    const g = clamp01(easeOut(greetAt(v)) * 1.5 - (k % 3) * 0.1);
+    return `translate(0 ${((1 - g) * -1.6).toFixed(3)})`;
+  });
+  return <motion.path ref={useAttr(tr, "transform")} d={d} fill="#1570EF" opacity={op} />;
+}
+
+function Pani({ posture, className }){
+  const shell = useTransform(posture, v => M.shell(easeIO(pourAt(v))));
+  const body  = useTransform(posture, v => M.body(easeIO(pourAt(v))));
+  const eyeL  = useTransform(posture, v => M.eyeL(faceAt(v)));
+  const eyeR  = useTransform(posture, v => M.eyeR(faceAt(v)));
+  const mouth = useTransform(posture, v => M.mouth(faceAt(v)));
+
+  /* closed eyes + mouth are absent from the greeting frame — they blink away */
+  const shut  = useTransform(posture, v => 1 - greetAt(v));
+  const greet = useTransform(posture, v => greetAt(v));
+  const pour  = useTransform(posture, v => pourAt(v));
+
+  const eyeScale = useTransform(posture, v => {
+    const g = easeOut(greetAt(v));
+    return `translate(32.1547 29.72) scale(${(0.28 + 0.72 * g).toFixed(4)}) translate(-32.1547 -29.72)`;
+  });
+  const badge = useTransform(posture, v => {
+    const g = greetAt(v), o = pourAt(v);
+    const s = 1 + 0.028 * g - 0.012 * o;
+    const a = -1.6 * g + 1.0 * o;
+    return `translate(32.78 32) rotate(${a.toFixed(3)}) scale(${s.toFixed(4)}) translate(-32.78 -32)`;
+  });
+  /* the exact 75° the two frames share — a real rotation, not a morph */
+  const spinT = useTransform(posture, v =>
+    `rotate(${(TILT * easeIO(pourAt(v))).toFixed(3)} ${PIVOT[0]} ${PIVOT[1]})`);
+
+  return (
+    <svg className={className} viewBox="0 0 66 64" fill="none" xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="Pani, an animated water-bottle mascot">
+      <defs>
+        <clipPath id="pani-clip"><rect width="65.5517" height="64" rx="11" /></clipPath>
+      </defs>
+      <g ref={useAttr(badge, "transform")}>
+        <g clipPath="url(#pani-clip)">
+          <path d={BADGE} fill="#1570EF" />
+
+          {/* greeting flourishes, flanking the base */}
+          <Flourish posture={posture} d={FLOURISH_L} ox={20.9} oy={43.7} dir={-1} />
+          <Flourish posture={posture} d={FLOURISH_R} ox={43.5} oy={42.7} dir={1} />
+
+          {/* the bottle itself rides the rotation; the face does not */}
+          <g ref={useAttr(spinT, "transform")}>
+            <motion.path d={shell} fill="white" />
+            <motion.path d={body} fill="#1570EF" />
+            {FOAM.map((b, k) => <Foam key={"f"+k} posture={posture} b={b} />)}
+            {/* fizz rising inside the neck, swept left to right */}
+            {FIZZ.map((f, k) => <Fizz key={"z"+k} posture={posture} f={f} k={k} />)}
+          </g>
+
+          {/* eyes: closed pair morphs across all three frames and blinks open at greeting */}
+          <motion.path d={eyeL} fill="#1570EF" opacity={shut} />
+          <motion.path d={eyeR} fill="#1570EF" opacity={shut} />
+          <motion.g ref={useAttr(eyeScale, "transform")} opacity={greet}>
+            <path d={EYE_OPEN_L} fill="white" />
+            <path d={EYE_OPEN_R} fill="white" />
+            <path d={PUPIL_L} fill="#1570EF" />
+            <path d={PUPIL_R} fill="#1570EF" />
+          </motion.g>
+
+          {LASHES.map((l, k) => <Lash key={"l"+k} posture={posture} d={l.d} k={k} />)}
+
+          <motion.path d={mouth} fill="#1570EF" opacity={shut} />
+          <motion.path d={DRIP_A} fill="#1570EF" opacity={pour} />
+          <motion.path d={DRIP_B} fill="#1570EF" opacity={pour} />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+/* ============================================================
+   4. THE MACHINE
+   ============================================================ */
+
+const MACHINE = {
+  resting: {
+    posture: 0, source: "default.svg",
+    blurb: "Capped, content, foam settled at the base.",
+    on: { HOVER: "greeting", POUR: "pouring" },
+  },
+  greeting: {
+    posture: 1, source: "on Hover.svg",
+    blurb: "Eyes open, fizz rising, mouth gone.",
+    on: { LEAVE: "resting", POUR: "pouring" },
+  },
+  pouring: {
+    posture: 2, source: "Hover animation.svg",
+    blurb: "Tipped 75°, four droplets clear the badge.",
+    on: { SETTLE: "greeting", LEAVE: "resting" },
+    after: { ms: 1400, event: "SETTLE" },
+  },
+};
+const ORDER = ["resting", "greeting", "pouring"];
+const ALL_EVENTS = ["HOVER", "LEAVE", "POUR", "SETTLE"];
+
+function useMachine(initial){
+  const [state, setState] = useState(initial);
+  const [log, setLog] = useState([]);
+  const seq = useRef(0);
+  const stateRef = useRef(initial);
+  stateRef.current = state;
+
+  const send = useCallback((event, note) => {
+    const from = stateRef.current;
+    const to = MACHINE[from].on[event];
+    seq.current += 1;
+    setLog(l => [{ n: seq.current, from, to: to || null, event, note }, ...l].slice(0, 7));
+    if (to){ stateRef.current = to; setState(to); }
+    return to || null;
+  }, []);
+
+  return { state, log, send, reset: () => { setLog([]); seq.current = 0; stateRef.current = "resting"; setState("resting"); } };
+}
+
+/* ============================================================
+   5. PANELS
+   ============================================================ */
+
+const NODE = { resting: 95, greeting: 300, pouring: 505 };
+
+function Graph({ state, last }){
+  const edges = [
+    { from:"resting",  to:"greeting", ev:"HOVER",  d:"M160 82 C 190 48 205 48 233 80",   lx:196, ly:47 },
+    { from:"greeting", to:"resting",  ev:"LEAVE",  d:"M235 110 C 205 144 190 144 162 112", lx:196, ly:152 },
+    { from:"greeting", to:"pouring",  ev:"POUR",   d:"M365 82 C 395 48 410 48 438 80",   lx:401, ly:47 },
+    { from:"pouring",  to:"greeting", ev:"SETTLE", d:"M440 110 C 410 144 395 144 367 112", lx:401, ly:152, sub:"after 1400ms" },
+    { from:"pouring",  to:"resting",  ev:"LEAVE",  d:"M470 120 C 460 196 380 206 300 206 C 220 206 105 198 96 122", lx:300, ly:220 },
+    { from:"resting",  to:"pouring",  ev:"POUR",   d:"M96 70 C 105 16 210 10 300 10 C 390 10 496 16 504 70", lx:300, ly:24, dash:1 },
+  ];
+  return (
+    <svg className="graph" viewBox="0 0 600 236" role="img" aria-label="State machine diagram">
+      <defs>
+        <marker id="ah-dim" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L8 4 L0 8 z" fill="var(--ink-3)" />
+        </marker>
+        <marker id="ah-live" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L8 4 L0 8 z" fill="var(--brand)" />
+        </marker>
+      </defs>
+
+      {edges.map((e, k) => {
+        const armed = MACHINE[state].on[e.ev] === e.to && state === e.from;
+        const fired = last && last.from === e.from && last.to === e.to && last.event === e.ev;
+        const live = armed || fired;
+        return (
+          <g key={"e"+k}>
+            <motion.path
+              d={e.d} fill="none"
+              stroke={live ? "var(--brand)" : "var(--line)"}
+              strokeWidth={fired ? 2.4 : live ? 1.7 : 1.2}
+              strokeDasharray={e.dash ? "4 4" : undefined}
+              markerEnd={live ? "url(#ah-live)" : "url(#ah-dim)"}
+              animate={fired ? { opacity: [1, .35, 1] } : { opacity: live ? 1 : .75 }}
+              transition={{ duration: .5 }}
+            />
+            <text className="edge-label" x={e.lx} y={e.ly} textAnchor="middle"
+                  fill={live ? "var(--brand)" : "var(--ink-3)"}>{e.ev}</text>
+            {e.sub && <text className="edge-label" x={e.lx} y={e.ly + 13} textAnchor="middle"
+                  fill="var(--ink-3)" style={{ fontSize: 8.5, letterSpacing: ".04em", textTransform: "none" }}>{e.sub}</text>}
+          </g>
+        );
+      })}
+
+      {ORDER.map(s => {
+        const on = state === s;
+        return (
+          <motion.g key={s}
+            animate={{ scale: on ? 1.045 : 1 }}
+            transition={{ type: "spring", stiffness: 340, damping: 22 }}
+            style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+            <rect className="node-box" x={NODE[s] - 66} y={73} width={132} height={40} rx={20}
+                  fill={on ? "var(--live)" : "var(--panel-2)"}
+                  stroke={on ? "var(--live)" : "var(--line)"} strokeWidth={1.4} />
+            <text className="node-label" x={NODE[s]} y={98} textAnchor="middle"
+                  fill={on ? "#04231F" : "var(--ink-2)"}>{s}</text>
+          </motion.g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function Meter({ label, value, tone }){
+  const pct = useTransform(value, v => `${(clamp01(v) * 100).toFixed(0)}%`);
+  const w = useTransform(value, v => `${clamp01(v) * 100}%`);
+  return (
+    <div className={"meter" + (tone ? " t" : "")}>
+      <div className="row"><span>{label}</span><motion.span>{pct}</motion.span></div>
+      <div className="track"><motion.div className="fill" style={{ width: w }} /></div>
+    </div>
+  );
+}
+
+function FrameButton({ name, k, current, onPick }){
+  const mv = useMotionValue(k);
+  return (
+    <button className={"frame" + (current ? " cur" : "")} onClick={onPick}>
+      <Pani posture={mv} />
+      <span className="meta">
+        <span className="p">p = {k} · {name}</span>
+        <span className="fn">{MACHINE[name].source}</span>
+      </span>
+    </button>
+  );
+}
+
+function App(){
+  const reduce = useReducedMotion();
+  const posture = useSpring(0, reduce
+    ? { stiffness: 900, damping: 60, mass: .4 }
+    : { stiffness: 130, damping: 17, mass: .95 });
+
+  const { state, log, send } = useMachine("resting");
+  const [mode, setMode] = useState("live");        // live | sequence | scrub
+  const [scrubV, setScrubV] = useState(0);
+  const [readout, setReadout] = useState(0);
+  const over = useRef(false);
+  const timers = useRef([]);
+
+  const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+  const at = (ms, fn) => timers.current.push(setTimeout(fn, ms));
+
+  /* the machine owns the posture target, unless the scrubber has taken over */
+  useEffect(() => {
+    if (mode === "scrub") return;
+    const target = MACHINE[state].posture;
+    if (reduce) posture.jump(target); else posture.set(target);
+  }, [state, mode, reduce]);
+
+  /* `after` transition out of pouring, guarded on whether the pointer is still there */
+  useEffect(() => {
+    if (state !== "pouring" || mode === "scrub") return;
+    const t = setTimeout(() => send(over.current ? "SETTLE" : "LEAVE", "after 1400ms"), 1400);
+    return () => clearTimeout(t);
+  }, [state, mode, send]);
+
+  useEffect(() => posture.on("change", v => setReadout(v)), []);
+  useEffect(() => clearTimers, []);
+
+  const runSequence = () => {
+    clearTimers();
+    setMode("sequence");
+    const cycle = () => {
+      send("HOVER", "sequence");
+      at(1000, () => send("POUR", "sequence"));
+      at(3300, () => send("LEAVE", "sequence"));
+      at(4400, cycle);
+    };
+    if (state !== "resting") send("LEAVE", "sequence");
+    at(120, cycle);
+  };
+  const stop = () => { clearTimers(); setMode("live"); };
+
+  const onScrub = v => {
+    setScrubV(v);
+    setMode("scrub");
+    clearTimers();
+    posture.jump(v);
+  };
+  const releaseScrub = () => {
+    const near = Math.round(scrubV);
+    setMode("live");
+    const target = ORDER[near];
+    if (target !== state){
+      const ev = Object.keys(MACHINE[state].on).find(e => MACHINE[state].on[e] === target);
+      if (ev) send(ev, "scrub release");
+      else { send("LEAVE", "scrub release"); }
+    }
+    posture.set(MACHINE[ORDER[near]] ? MACHINE[ORDER[near]].posture : 0);
+  };
+
+  const shellT = useTransform(posture, v => pourAt(v));
+  const faceT  = useTransform(posture, v => faceAt(v));
+  const greetT = useTransform(posture, v => greetAt(v));
+
+  const cur = MACHINE[state];
+  const last = log[0] && log[0].to ? log[0] : null;
+
+  return (
+    <>
+      {/* ---------- stage ---------- */}
+      <div className="grid grid-stage">
+        <div className="stage" tabIndex="0" role="button"
+             aria-label="Pani stage: hover to greet, click to pour"
+             onPointerEnter={() => { over.current = true; if (mode === "live") send("HOVER", "pointer"); }}
+             onPointerLeave={() => { over.current = false; if (mode === "live") send("LEAVE", "pointer"); }}
+             onClick={() => { if (mode === "live") send("POUR", "pointer"); }}
+             onKeyDown={e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); if (mode === "live") send(state === "resting" ? "HOVER" : "POUR", "keyboard"); } }}>
+          <div className="stage-mode">
+            {mode === "sequence" && <span className="chip on">sequence</span>}
+            {mode === "scrub" && <span className="chip on">scrub</span>}
+            <span className="chip">p = {readout.toFixed(3)}</span>
+          </div>
+          <motion.div
+            animate={reduce ? {} : { y: [0, -7, 0] }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}>
+            <Pani posture={posture} className="pani" />
+          </motion.div>
+          <div className="stage-hint">hover · click to pour</div>
+        </div>
+
+        <div className="rail">
+          <div className="readout">
+            <div className="k">Current state</div>
+            <div className="state-now"><span className="dot" />{state}</div>
+            <div className="state-src">{cur.blurb}</div>
+          </div>
+          <div className="readout">
+            <div className="k" style={{ marginBottom: 10 }}>Interpolators</div>
+            <div className="meters">
+              <Meter label="tilt + spout" value={shellT} />
+              <Meter label="face morph" value={faceT} />
+              <Meter label="greeting mix" value={greetT} tone />
+            </div>
+          </div>
+          <div className="readout">
+            <div className="k">Source frame</div>
+            <div style={{ fontFamily: "var(--f-mono)", fontSize: 12.5, marginTop: 5 }}>{cur.source}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------- machine ---------- */}
+      <div className="grid grid-machine">
+        <section className="panel">
+          <div className="panel-head">
+            <h2>Transition graph</h2>
+            <p>lit edges are accepted from here</p>
+          </div>
+          <Graph state={state} last={last} />
+        </section>
+
+        <section className="panel">
+          <div className="panel-head">
+            <h2>Console</h2>
+            <p>send an event by hand</p>
+          </div>
+          <div className="events">
+            {ALL_EVENTS.map(ev => {
+              const to = cur.on[ev];
+              return (
+                <button key={ev} className={"evt" + (to ? " armed" : "")} disabled={!to}
+                        onClick={() => { stop(); send(ev, "console"); }}>
+                  <span className="name">{ev}</span>
+                  <span className="to">{to ? "→ " + to : "not accepted"}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="ctl-row">
+            <button className={"btn" + (mode === "sequence" ? " on" : "")}
+                    onClick={() => (mode === "sequence" ? stop() : runSequence())}>
+              {mode === "sequence" ? "Stop" : "Run sequence"}
+            </button>
+            <button className="btn" onClick={() => { stop(); if (state !== "resting") send("LEAVE", "reset"); }}>
+              Reset
+            </button>
+          </div>
+
+          <div className="log">
+            <ul>
+              {log.length === 0 && <li style={{ color: "var(--ink-3)" }}>no events yet</li>}
+              {log.map(e => (
+                <li key={e.n}>
+                  <span className="n">{String(e.n).padStart(2, "0")}</span>
+                  <span>{e.from}</span>
+                  {e.to
+                    ? <><span className="arw">—</span><span className="ev">{e.event}</span><span className="arw">→</span><span>{e.to}</span></>
+                    : <><span className="arw">—</span><span className="bad">{e.event} ignored</span></>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      {/* ---------- scrub ---------- */}
+      <section className="panel">
+        <div className="panel-head">
+          <h2>Scrub the morph</h2>
+          <p>drag between frames — nothing cross-fades</p>
+        </div>
+        <div className="scrub-frames">
+          {ORDER.map((s, k) => (
+            <FrameButton key={s} name={s} k={k} current={state === s && mode !== "scrub"}
+                         onPick={() => { stop(); setScrubV(k);
+                           if (s !== state){
+                             const ev = Object.keys(cur.on).find(e => cur.on[e] === s);
+                             send(ev || "LEAVE", "frame pick");
+                           } }} />
+          ))}
+        </div>
+        <input type="range" min="0" max="2" step="0.001" value={mode === "scrub" ? scrubV : readout}
+               aria-label="Morph posture"
+               onChange={e => onScrub(parseFloat(e.target.value))}
+               onPointerUp={releaseScrub} onKeyUp={releaseScrub} onBlur={() => mode === "scrub" && releaseScrub()} />
+        <div className="ticks"><span>0 · resting</span><span>1 · greeting</span><span>2 · pouring</span></div>
+      </section>
+
+      {/* ---------- notes ---------- */}
+      <hr className="rule" />
+      <section className="notes">
+        <div className="note">
+          <h3>One scalar, not three files</h3>
+          <p>Everything hangs off a single spring, <code>p ∈ [0,2]</code>. The machine sets its target; the scrubber sets it directly with <code>jump()</code>. Every path, circle and opacity is a pure function of <code>p</code>, so a state change and a hand-drag produce identical frames.</p>
+        </div>
+        <div className="note">
+          <h3>The shared 75°</h3>
+          <p>The poured body is the upright body rotated exactly <strong>75°</strong> about <code>(32.155, 32.064)</code> — the badge centre — to four decimal places. Two foam bubbles land on their rotated twins as well; the rest were nudged by hand.</p>
+          <p>So the rig rotates by that exact angle and morphs only what is left over. Handed the two silhouettes cold, flubber collapses the glass into a lump halfway through; un-rotate the poured one first and the only real difference is the spout.</p>
+        </div>
+        <div className="note">
+          <h3>What actually morphs</h3>
+          <p>Flubber interpolates the shell and all three face features. Foam is carried inside the rotating group, so sixteen circles simply lerp in the bottle&rsquo;s own frame — and start <em>after</em> the tip, which is what makes it read as weight rather than as sliding.</p>
+          <p>The greeting frame has no mouth and no closed eyes, so those blink out at <code>p = 1</code> while the open eyes scale in — still morphing underneath, ready for <code>p = 2</code>. Four bubbles clear the badge as droplets on staggered offsets.</p>
+        </div>
+      </section>
+
+      <footer>
+        <span>React 18</span><span>Framer Motion 11</span><span>Flubber 0.4</span>
+        <span>3 source frames · 1 rig · 16 bubbles</span>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>

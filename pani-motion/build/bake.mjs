@@ -17,6 +17,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import * as G from "./geometry.mjs";
+import * as W from "./water.mjs";
 
 const flubber = createRequire(import.meta.url)("flubber");   // CJS build
 
@@ -84,6 +85,9 @@ function ringPair(a, b, seg){
   return [A, B];
 }
 const ringLerp = (A, B, t) => A.map((v, i) => v + (B[i] - v) * t);
+function polyPath(poly){
+  return poly.map((p, i) => (i ? "L" : "M") + round(p[0], 2) + " " + round(p[1], 2)).join("") + "Z";
+}
 function ringToPath(r){
   let s = "M" + round(r[0], 2) + " " + round(r[1], 2);
   for (let i = 2; i < r.length; i += 2) s += "L" + round(r[i], 2) + " " + round(r[i+1], 2);
@@ -118,54 +122,27 @@ const [eyeLA,  eyeLB ] = ringPair(G.EYE_L_UP, G.EYE_L_TILT, .3);
 const [eyeRA,  eyeRB ] = ringPair(G.EYE_R_UP, G.EYE_R_TILT, .3);
 const [mouthA, mouthB] = ringPair(G.MOUTH_UP, G.MOUTH_TILT, .3);
 
-/* Poured foam targets, expressed in the glass's own frame. */
-const FOAM = G.FOAM.map(b => {
-  const q = spin(b.p[0], b.p[1], -TILT);
-  return { ...b, q: [q[0], q[1], b.p[2]] };
-});
-
-/* The body outline barely changes in glass space, so one trapezoid holds foam
-   for the whole tip. Keeping bubbles inside it is what stops the mid-morph
-   splatter you get from letting them lerp freely.
-
-   The wall is generous on purpose: several source bubbles already overlap it,
-   and a white bubble sitting in the white shell is invisible. What has to be
-   caught is a bubble reaching open blue. */
-const GLASS = [[20, 18], [44.5, 18], [39.0563, 47.0801], [25.7106, 47.0801]];
-const WALL = 2.2;
-function containFoam(x, y, r){
-  const need = r - WALL;
-  for (let pass = 0; pass < 3; pass++){
-    for (let i = 0; i < 4; i++){
-      const [ax, ay] = GLASS[i], [bx, by] = GLASS[(i + 1) % 4];
-      /* GLASS winds clockwise on a y-down canvas, so the inward normal of
-         edge A→B is the direction rotated a quarter turn: (-dy, dx). */
-      let nx = -(by - ay), ny = bx - ax;
-      const len = Math.hypot(nx, ny); nx /= len; ny /= len;
-      const dist = (x - ax) * nx + (y - ay) * ny;
-      if (dist < need){ x += nx * (need - dist); y += ny * (need - dist); }
-    }
-  }
-  return [x, y];
-}
+/* The four droplets in the pour export set the spray's scatter; the top row of
+   bubbles in the rest export sets the surface scallop. Both live in water.mjs. */
 
 /* --- the authored timeline -----------------------------------------------
    Nine keyframes. The three exports sit at p = 0, 1 and 2 untouched; the six
    between them are where the weight lives — a wind-up before the tip, foam
    that lags and pools downhill, an overshoot on the way into the pour.       */
 const KEYS = [
-//  name       p      rot   sqx    sqy    shell  face  greet  foam   bScale bRot
-  ["rest",   0.00,   0,   1,     1,     0,     0,    0,     0,     1,     0   ],
-  ["stir",   0.30,   0,   1.014, 0.987, 0,     0.09, 0.26,  0.015, 1.006, -0.5],
-  ["blink",  0.62,  -1.2, 0.992, 1.011, 0,     0.26, 0.74,  0.03,  1.021, -1.3],
-  ["greet",  1.00,   0,   1,     1,     0,     0.5,  1,     0,     1.028, -1.6],
-  ["windup", 1.14,  -7,   1.032, 0.966, 0.03,  0.57, 0.58, -0.07,  1.019, -2.6],
-  ["tip",    1.40,  26,   0.984, 1.021, 0.30,  0.71, 0.10,  0.20,  1.002,  0.3],
-  ["brim",   1.64,  52,   1.004, 0.998, 0.62,  0.85, 0,     0.54,  0.995,  0.9],
-  ["spill",  1.85,  71,   1.014, 0.988, 0.88,  0.95, 0,     0.85,  0.990,  1.2],
-  ["pour",   2.00,  75,   1,     1,     1,     1,    0,     1,     0.988,  1.0],
-].map(([name, p, rot, sqx, sqy, shell, face, greet, foam, bScale, bRot]) =>
-       ({ name, p, rot, sqx, sqy, shell, face, greet, foam, bScale, bRot }));
+//  name       p      rot   sqx    sqy    shell  face  greet  fill  bScale bRot
+  ["rest",   0.00,   0,   1,     1,     0,     0,    0,     1,    1,     0   ],
+  ["stir",   0.30,   0,   1.014, 0.987, 0,     0.09, 0.26,  1,    1.006, -0.5],
+  ["blink",  0.62,  -1.2, 0.992, 1.011, 0,     0.26, 0.74,  1,    1.021, -1.3],
+  ["greet",  1.00,   0,   1,     1,     0,     0.5,  1,     1,    1.028, -1.6],
+  ["windup", 1.14,  -7,   1.032, 0.966, 0.03,  0.57, 0.58,  1,    1.019, -2.6],
+  ["tip",    1.38,  26,   0.984, 1.021, 0.30,  0.71, 0.10,  1,    1.002,  0.3],
+  ["brim",   1.58,  46,   1.002, 0.999, 0.55,  0.80, 0,     0.99, 0.997,  0.7],
+  ["crest",  1.74,  60,   1.008, 0.993, 0.74,  0.88, 0,     0.95, 0.993,  0.9],
+  ["spill",  1.88,  70,   1.012, 0.990, 0.88,  0.95, 0,     0.90, 0.990,  1.1],
+  ["pour",   2.00,  75,   1,     1,     1,     1,    0,     0.86, 0.988,  1.0],
+].map(([name, p, rot, sqx, sqy, shell, face, greet, fill, bScale, bRot]) =>
+       ({ name, p, rot, sqx, sqy, shell, face, greet, fill, bScale, bRot }));
 
 /* Feature centres, used to author the blink and the gasp. */
 const OPEN_L = [28.5284, 29.72], OPEN_R = [36.3018, 29.72];
@@ -173,28 +150,7 @@ const SHUT_L = ringCentre(eyeLA),  SHUT_R = ringCentre(eyeRA);
 const MOUTH_C = ringCentre(mouthA);
 
 function buildKey(k){
-  const rot = k.rot, g = k.greet;
-
-  /* Foam. Progress lags the tip, then gravity pulls each bubble downhill in
-     glass space before the trapezoid pushes it back inside the walls. */
-  const downAng = -rot * Math.PI / 180;
-  const down = [Math.sin(downAng) * -1, Math.cos(downAng)];   // world "down", in glass space
-  const pool = 2.6 * Math.sin(Math.PI * clamp01(Math.abs(rot) / TILT));
-  const exact = k.p === 0 || k.p === 2;
-
-  const foam = FOAM.map(b => {
-    const raw = b.lag ? clamp01((k.foam - b.lag) / (1 - b.lag)) : clamp01(k.foam);
-    const t = raw * raw * (3 - 2 * raw);
-    let x = lerp(b.i[0], b.q[0], t);
-    let y = lerp(b.i[1], b.q[1], t);
-    const r = lerp(b.i[2], b.q[2], t);
-    const o = b.fade ? 1 - t : 1;
-    if (!exact && !b.out){
-      x += down[0] * pool; y += down[1] * pool;
-      [x, y] = containFoam(x, y, r);
-    }
-    return [round(x), round(y), round(r), round(o, 3)];
-  });
+  const g = k.greet;
 
   /* Eyes. Rather than cross-fading a closed eye out and an open one in, the
      closed pair travels up to the open pair's seat as it thins away — so one
@@ -215,14 +171,14 @@ function buildKey(k){
     ...k,
     shell: ringLerp(shellA, shellB, k.shell),
     body:  ringLerp(bodyA,  bodyB,  k.shell),
-    eyeL, eyeR, mouth, foam,   /* `foam` here is the bubble table, not k.foam */
+    eyeL, eyeR, mouth,
     shutO: round(1 - g, 3),
     openO: round(clamp01(g * 1.25 - .12), 3),
     openSY: round(.08 + .92 * (g * g * (3 - 2 * g)), 3),
     mouthO: round(clamp01(1 - g * 1.45), 3),
     flourO: round(clamp01(g * 1.15 - .08), 3),
     flourS: round(.45 + .55 * g, 3),
-    dripO: round(clamp01(k.foam * 1.6 - .45), 3),
+    dripO: round(clamp01((k.rot - 30) / 34), 3),
     fizz: G.FIZZ.map((f, i) => [
       round(clamp01(g * 1.9 - i * .16), 3),
       round((1 - clamp01(g * 1.55 - i * .13)) * 3.6, 3),
@@ -236,25 +192,6 @@ function buildKey(k){
 }
 
 const FRAMES = KEYS.map(buildKey);
-
-/* How far past the outer edge of the shell does any bubble reach? Anything
-   above zero is foam on open blue. The exports are reported too, untouched,
-   so the wall can be tuned without disturbing them. */
-function overhang(f){
-  let worst = -Infinity;
-  f.foam.forEach(([x, y, r], i) => {
-    if (FOAM[i].out || r < 0.05) return;
-    let inside = Infinity;
-    for (let e = 0; e < 4; e++){
-      const [ax, ay] = GLASS[e], [bx, by] = GLASS[(e + 1) % 4];
-      let nx = -(by - ay), ny = bx - ax;
-      const len = Math.hypot(nx, ny); nx /= len; ny /= len;
-      inside = Math.min(inside, (x - ax) * nx + (y - ay) * ny);
-    }
-    worst = Math.max(worst, r - WALL - inside);
-  });
-  return worst;
-}
 
 /* --- emit one standalone SVG per keyframe -------------------------------- */
 function frameSVG(f, i){
@@ -275,13 +212,25 @@ function frameSVG(f, i){
   L.push(`<g transform="${gt}">`);
   L.push(`<path d="${ringToPath(f.shell)}" fill="white"/>`);
   L.push(`<path d="${ringToPath(f.body)}" fill="${BLUE}"/>`);
-  for (const [x, y, r, o] of f.foam) if (r > 0.01 && o > 0.005)
-    L.push(`<circle cx="${x}" cy="${y}" r="${r}"${op(o)} fill="white"/>`);
+  const wt = W.water(f.rot, f.fill);
+  L.push(`<path d="${polyPath(wt.poly)}" fill="white"/>`);
+  for (const [x, y, r] of wt.scallops)
+    L.push(`<circle cx="${round(x,2)}" cy="${round(y,2)}" r="${round(r,2)}" fill="white"/>`);
   f.fizz.forEach(([o, dy, s], j) => { if (on(o)){
     const [cx, cy] = G.FIZZ[j].o;
     L.push(`<path d="${G.FIZZ[j].d}" fill="white"${op(o)} transform="translate(0 ${dy}) translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})"/>`);
   }});
   L.push(`</g>`);
+  if (wt.flow > 0.01){
+    const lipW = W.spinTo(wt.lip, f.rot), nrm = W.mouthNormal(f.rot);
+    for (let i = 0; i < W.SPRAY_N; i++){
+      const t = (i / W.SPRAY_N) * W.SPRAY_MAX;
+      const o = wt.flow * W.sprayFade(t);
+      if (o <= 0.01) continue;
+      const [x, y] = W.sprayAt(t, i, lipW, nrm);
+      L.push(`<circle cx="${round(x,2)}" cy="${round(y,2)}" r="${round(W.sprayR(t),2)}"${op(round(o,3))} fill="white"/>`);
+    }
+  }
   if (on(f.shutO)){
     L.push(`<path d="${ringToPath(f.eyeL)}" fill="${BLUE}"${op(f.shutO)}/>`);
     L.push(`<path d="${ringToPath(f.eyeR)}" fill="${BLUE}"${op(f.shutO)}/>`);
@@ -311,14 +260,12 @@ const flat = a => a.map(v => round(v, 2));
 const BAKED = {
   P: FRAMES.map(f => f.p),
   names: FRAMES.map(f => f.name),
-  anchors: [0, 3, 8],                                  // the three exports
+  /* derived, not counted by hand — the timeline gains keyframes */
+  anchors: ["rest", "greet", "pour"].map(n => FRAMES.findIndex(f => f.name === n)),
   sources: ["default.svg", "on Hover.svg", "Hover animation.svg"],
   pivot: PIVOT,
   badge: G.BADGE,
-  /* The runtime re-applies containment: the spline between two contained
-     keyframes can still bulge past the wall. */
-  glass: GLASS, wall: WALL,
-  hold: FOAM.map(b => (b.out ? 0 : 1)),
+
   rings: {
     shell: FRAMES.map(f => flat(f.shell)),
     body:  FRAMES.map(f => flat(f.body)),
@@ -326,7 +273,6 @@ const BAKED = {
     eyeR:  FRAMES.map(f => flat(f.eyeR)),
     mouth: FRAMES.map(f => flat(f.mouth)),
   },
-  foam: FOAM.map((_, i) => FRAMES.map(f => f.foam[i])),
   tracks: {
     rot:    FRAMES.map(f => f.rot),
     sqx:    FRAMES.map(f => f.sqx),
@@ -341,6 +287,7 @@ const BAKED = {
     flourS: FRAMES.map(f => f.flourS),
     flourR: FRAMES.map(f => round((1 - f.greet) * 14, 2)),
     dripO:  FRAMES.map(f => f.dripO),
+    fill:   FRAMES.map(f => f.fill),
   },
   fizz: G.FIZZ.map((f, j) => ({ d: f.d, o: f.o, k: FRAMES.map(fr => fr.fizz[j]) })),
   lash: G.LASHES.map((l, j) => ({ d: l.d, k: FRAMES.map(fr => fr.lash[j]) })),
@@ -354,20 +301,33 @@ const BAKED = {
 const js = "const BAKED = " + JSON.stringify(BAKED) + ";";
 fs.writeFileSync(path.join(HERE, "baked.js"), js + "\n");
 
-const rig = fs.readFileSync(RIG, "utf8");
-const A = "/* BAKED_START */", B = "/* BAKED_END */";
-if (rig.includes(A) && rig.includes(B)){
-  const out = rig.slice(0, rig.indexOf(A) + A.length) + "\n" + js + "\n" + rig.slice(rig.indexOf(B));
-  fs.writeFileSync(RIG, out);
-  console.log("spliced into pani-morph-rig.html");
+/* The rig gets both the data and the liquid model itself, so the solver the
+   keyframes were baked with is byte-for-byte the one the page runs. */
+const waterSrc = fs.readFileSync(path.join(HERE, "water.mjs"), "utf8")
+  .replace(/^export \{[\s\S]*?\};\s*$/m, "").trimEnd();
+
+let rig = fs.readFileSync(RIG, "utf8");
+function splice(src, a, b, body){
+  if (!src.includes(a) || !src.includes(b)) return null;
+  return src.slice(0, src.indexOf(a) + a.length) + "\n" + body + "\n" + src.slice(src.indexOf(b));
+}
+const withData = splice(rig, "/* BAKED_START */", "/* BAKED_END */", js);
+const withBoth = withData && splice(withData, "/* WATER_START */", "/* WATER_END */", waterSrc);
+if (withBoth){
+  fs.writeFileSync(RIG, withBoth);
+  console.log("spliced data + liquid model into pani-morph-rig.html");
 } else {
   console.log("markers not found in rig — wrote build/baked.js only");
 }
 
 console.log(`${FRAMES.length} keyframes → frames/keys/`);
 console.log(FRAMES.map((f, i) => `  k${i}-${f.name}.svg  p=${f.p.toFixed(2)}  rot=${f.rot}°`).join("\n"));
-console.log("foam overhang past the shell (negative = contained):");
-console.log(FRAMES.map(f => `  ${f.name.padEnd(7)} ${overhang(f) >= 0 ? "+" : ""}${overhang(f).toFixed(2)}`).join("\n"));
+console.log(`rest volume ${W.REST_VOL.toFixed(1)}  ·  flow onset near 52°`);
+console.log(FRAMES.map(f => {
+  const w = W.water(f.rot, f.fill);
+  return `  ${f.name.padEnd(7)} rot ${String(f.rot).padStart(5)}°  fill ${f.fill.toFixed(2)}  ` +
+         `scallops ${w.scallops.length}  flow ${w.flow.toFixed(2)}`;
+}).join("\n"));
 console.log(`ring points: shell ${shellA.length / 2}, body ${bodyA.length / 2}, `
           + `eyes ${eyeLA.length / 2}, mouth ${mouthA.length / 2}`);
 console.log(`baked.js ${(js.length / 1024).toFixed(1)} kB`);

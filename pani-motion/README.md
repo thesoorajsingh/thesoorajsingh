@@ -1,20 +1,23 @@
 # Pani motion rig
 
 Three Figma exports of the Pani icon — `default`, `on Hover`, `Hover animation` —
-rebuilt as one continuous timeline with six authored keyframes between them,
-driven by a state machine.
+rebuilt as one continuous timeline with seven authored keyframes between them,
+driven by a state machine. The shapes are baked; the water is solved.
 
 ```
 frames/            the three source SVGs, unmodified
 frames/keys/       nine standalone keyframe SVGs, emitted by the baker
 build/geometry.mjs path data extracted from the sources
+build/water.mjs    the liquid model, shared by the baker and the rig
 build/bake.mjs     the baker
 build/baked.js     generated: the timeline as interpolation-ready numbers
 pani-morph-rig.html the prototype (Artifact format — see below)
 ```
 
-`npm install && npm run bake` regenerates `frames/keys/`, `build/baked.js`, and
-splices the data into the rig between its `BAKED_START` / `BAKED_END` markers.
+`npm install && npm run bake` regenerates `frames/keys/` and `build/baked.js`,
+and splices both the data (`BAKED_START` / `BAKED_END`) and the liquid model
+itself (`WATER_START` / `WATER_END`) into the rig — so the solver that produced
+the keyframes is byte-for-byte the one the page runs.
 
 ## Baked, not solved
 
@@ -24,38 +27,62 @@ The baker does that once, with flubber, and writes the result out as plain
 coordinate arrays — 372 matched points across five outlines, at nine keyframes.
 
 The runtime therefore ships **no morph library, no JSX transform and no React**:
-one script (Motion, Framer Motion's framework-agnostic bundle) plus ~53 kB of
-numbers. Drawing a frame costs about 0.35 ms.
+one script (Motion, Framer Motion's framework-agnostic bundle) plus ~54 kB of
+numbers. The liquid is the one thing that cannot be baked, because it answers to
+time as well as to `p`. Drawing a frame — spline, solve and all — costs about
+0.36 ms.
 
 Between keyframes the rig runs a cubic Hermite with Catmull-Rom tangents
 measured in `p`, so velocity carries through each knot instead of restarting at
 it. The knots are unevenly spaced on purpose; uniform tangents would tick.
 
-## The nine keyframes
+## The water
 
-| # | name | p | tilt | |
-|---|------|---|------|---|
-| 0 | rest | 0.00 | 0° | `default.svg` |
-| 1 | stir | 0.30 | 0° | authored |
-| 2 | blink | 0.62 | −1.2° | authored |
-| 3 | greet | 1.00 | 0° | `on Hover.svg` |
-| 4 | windup | 1.14 | −7° | authored |
-| 5 | tip | 1.40 | 26° | authored |
-| 6 | brim | 1.64 | 52° | authored |
-| 7 | spill | 1.85 | 71° | authored |
-| 8 | pour | 2.00 | 75° | `Hover animation.svg` |
+The glass is a convex quad in its own frame. The water is that quad intersected
+with a half-plane whose normal is world-down written in glass space, and the cut
+is solved by bisection for a given volume. That one fact does all the work: the
+surface stays level however far the glass turns, the mass pools to the low side,
+climbs the wall as it tips, and reaches the rim at about **52°** on its own.
+Nothing keyframes the spill — flow is just how far the lip has sunk below the
+surface.
+
+Pouring is not a pose. While flow is non-zero the level falls, which weakens the
+flow, which slows the fall; stand the glass up and it fills back. Holding the
+pour for the machine's 1400 ms takes it from full to about 73%.
+
+The surface keeps the icon's bubbled edge: the top row of bubbles in
+`default.svg` supplies the scallop radius and spacing, and every surface after it
+is scalloped the same way. The spray leaves the lip as one body and scatters as
+it falls, using the four droplets in the pour export — measured off the exit
+parabola — as its break-up.
+
+This replaced the original treatment, which carried the export's sixteen bubbles
+around in the *glass's* frame. That is why it read as cargo rather than liquid.
+The pour export itself gives the game away: its foam spans x 20→47 but y only
+35→41, so the artist had already drawn the water level in world space.
+
+## The ten keyframes
+
+| # | name | p | tilt | flow | |
+|---|------|---|------|------|---|
+| 0 | rest | 0.00 | 0° | — | `default.svg` |
+| 1 | stir | 0.30 | 0° | — | authored |
+| 2 | blink | 0.62 | −1.2° | — | authored |
+| 3 | greet | 1.00 | 0° | — | `on Hover.svg` |
+| 4 | windup | 1.14 | −7° | — | authored |
+| 5 | tip | 1.38 | 26° | — | authored |
+| 6 | brim | 1.58 | 46° | — | authored |
+| 7 | crest | 1.74 | 60° | 0.40 | authored |
+| 8 | spill | 1.88 | 70° | 0.89 | authored |
+| 9 | pour | 2.00 | 75° | 1.00 | `Hover animation.svg` |
+
+The flow column is not authored — it is what the liquid model reports at that
+tilt and fullness.
 
 The exports sit at 0, 1 and 2 untouched. The six in-betweens are where the
 weight lives:
 
 - **A wind-up.** The glass leans −7° and squashes before it tips.
-- **Foam with inertia.** Bubble progress lags the rotation, then gravity pulls
-  each one downhill in the glass's own frame.
-- **Containment.** Foam is held inside the body outline, offset outward by a
-  shell thickness — a white bubble inside the white shell is invisible, one on
-  open blue is not. The baker holds every keyframe and the runtime re-applies
-  the wall on every drawn frame, because a spline through two contained points
-  can still bow outside.
 - **A real blink.** The closed eyes travel up into the open pair's seat as they
   thin away, so one eye opens rather than two eyes cross-fading.
 - **A gasp.** The greeting export has no mouth, so the smile purses shut instead

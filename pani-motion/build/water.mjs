@@ -21,6 +21,7 @@ const REST_LEVEL = 31.6327;   /* y of the top bubble row in default.svg */
 const SCALLOP_R = 3.3905;     /* its radius */
 const SCALLOP_GAP = 5;        /* its spacing */
 const WALL_INSET = 1.2;
+const SCALLOP_MAX = 24;   /* pool size the rig allocates */
 const FLOW_DEPTH = 5.5;       /* how far the lip sits under the surface at full flow */
 
 const dot = (p, d) => p[0] * d[0] + p[1] * d[1];
@@ -80,7 +81,9 @@ function water(deg, fill){
   const poly = clipDeep(GLASS, d, c);
 
   /* The two vertices the cut just created are the surface; scallop them so the
-     mass keeps the icon's bubbled edge at any angle. */
+     mass keeps the icon's bubbled edge at any angle. The bubble is sized to the
+     water under it — at rest that is the export's own radius, and as the glass
+     empties it shrinks with the sliver instead of bulging out onto blue. */
   const surf = poly.filter(p => Math.abs(dot(p, d) - c) < 1e-6);
   const scallops = [];
   if (surf.length >= 2){
@@ -89,21 +92,34 @@ function water(deg, fill){
     const len = Math.hypot(ux, uy);
     if (len > 0.6){
       ux /= len; uy /= len;
-      const span = len - 2 * WALL_INSET;
-      if (span > 0.5){
-        const n = Math.max(2, Math.round(span / SCALLOP_GAP) + 1);
+      let depth = 0;
+      for (const q of poly) depth = Math.max(depth, dot(q, d) - c);
+      const r = Math.min(SCALLOP_R, depth * 0.85, len * 0.55);
+      const gap = SCALLOP_GAP * (r / SCALLOP_R);
+      const inset = WALL_INSET * (r / SCALLOP_R);
+      const span = len - 2 * inset;
+      if (r > 0.15 && span > 0.5){
+        const n = Math.min(SCALLOP_MAX, Math.max(2, Math.round(span / gap) + 1));
         for (let i = 0; i < n; i++){
-          const s = WALL_INSET + span * (i / (n - 1));
-          scallops.push([A[0] + ux * s, A[1] + uy * s, SCALLOP_R]);
+          const t = inset + span * (i / (n - 1));
+          scallops.push([A[0] + ux * t, A[1] + uy * t, r]);
         }
-      } else {
-        scallops.push([(A[0] + B[0]) / 2, (A[1] + B[1]) / 2, SCALLOP_R]);
+      } else if (r > 0.15){
+        scallops.push([(A[0] + B[0]) / 2, (A[1] + B[1]) / 2, r]);
       }
     }
   }
 
   const flow = Math.max(0, Math.min(1, (lipDepth(d) - c) / FLOW_DEPTH));
   return { poly, scallops, flow, level: c, lip: lipPoint(d) };
+}
+
+/* Where the surface sits on screen. The face is painted on the water, so when
+   the glass drains further than the timeline expected, this is how far it has
+   to ride down to stay on it. */
+function surfaceY(deg, fill){
+  const d = downIn(deg);
+  return PIVOT[1] + levelFor(d, Math.max(3, fill * REST_VOL)) - dot(PIVOT, d);
 }
 
 /* ---------------------------------------------------------------------------
@@ -133,5 +149,5 @@ const sprayR = s => Math.max(1.15, 2.95 - 1.15 * s);
 const sprayFade = s => Math.min(1, s / 0.04) * Math.min(1, (SPRAY_MAX - s) / 0.28);
 const mouthNormal = deg => { const r = deg * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; };
 
-export { GLASS, MOUTH, PIVOT, REST_LEVEL, REST_VOL, SCALLOP_R, water, spinTo,
+export { GLASS, MOUTH, PIVOT, REST_LEVEL, REST_VOL, SCALLOP_R, SCALLOP_MAX, water, surfaceY, spinTo,
          sprayAt, sprayR, sprayFade, mouthNormal, SPRAY_N, SPRAY_MAX, polyArea, clipDeep, downIn };

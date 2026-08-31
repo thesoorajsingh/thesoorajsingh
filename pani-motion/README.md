@@ -47,12 +47,20 @@ Nothing keyframes the spill — flow is just how far the lip has sunk below the
 surface.
 
 Pouring is not a pose. While flow is non-zero the level falls, which weakens the
-flow, which slows the fall; stand the glass up and it fills back. Holding the
-pour for the machine's 1400 ms takes it from full to about 73%.
+flow, which slows the fall; stand the glass up and it fills back. Nothing floors
+the drain — hold the glass over and it empties, coming to rest at about an eighth
+full, which is the point where the surface has dropped to the lip and the flow
+has stopped itself. The machine's own 1400 ms pour takes it from full to roughly
+80%; scrub to `p = 2` and wait to see it run dry.
+
+The face is painted on the water, so it rides down with the surface. At the
+timeline's own fill the offset is zero and the exports are untouched; only drain
+beyond what the timeline expected moves it.
 
 The surface keeps the icon's bubbled edge: the top row of bubbles in
-`default.svg` supplies the scallop radius and spacing, and every surface after it
-is scalloped the same way. The spray leaves the lip as one body and scatters as
+`default.svg` supplies the scallop radius and spacing. The bubble is sized to the
+water beneath it, so as the glass empties the scallop shrinks with the sliver
+instead of bulging out onto open blue. The spray leaves the lip as one body and scatters as
 it falls, using the four droplets in the pour export — measured off the exit
 parabola — as its break-up.
 

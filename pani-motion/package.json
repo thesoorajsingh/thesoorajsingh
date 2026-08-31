@@ -1,0 +1,7 @@
+{
+  "name": "pani-motion",
+  "private": true,
+  "type": "module",
+  "scripts": { "bake": "node build/bake.mjs" },
+  "devDependencies": { "flubber": "^0.4.2" }
+}
